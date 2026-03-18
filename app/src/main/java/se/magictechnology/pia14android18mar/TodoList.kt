@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun TodoList() {
+fun TodoList(goDetail: () -> Unit = {}) {
 
     var mynumber by remember { mutableIntStateOf(0) }
 
@@ -26,6 +26,12 @@ fun TodoList() {
             mynumber++
         }) {
             Text("CLICK HERE!!!")
+        }
+
+        Button(onClick = {
+            goDetail()
+        }) {
+            Text("GO DETAIL")
         }
     }
 }

@@ -1,6 +1,9 @@
 package se.magictechnology.pia14android18mar
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -22,10 +25,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
+
+enum class TodoRoute {
+    TODOLIST,
+    DETAIL,
+    PROFILE,
+    PROFILESETTINGS,
+    TEST
+}
 
 data class NavigationItem(
     val title: String,
@@ -43,25 +56,48 @@ fun TodoNavBar() {
         NavigationItem(
             title = "Todo",
             icon = Icons.Default.Home,
-            route = "todolist"
+            route = TodoRoute.TODOLIST.name
         ),
         NavigationItem(
             title = "Profile",
             icon = Icons.Default.Person,
-            route = "profile"
+            route = TodoRoute.PROFILE.name
+        ),
+        NavigationItem(
+            title = "Test",
+            icon = Icons.Default.Person,
+            route = TodoRoute.TEST.name
         )
+
     )
 
 
     Scaffold(
+        topBar = {
+        },
         bottomBar = {
-            NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
+            NavigationBar(
+                containerColor = Color.Cyan,
+                windowInsets = NavigationBarDefaults.windowInsets
+            ) {
                 navigationItems.forEachIndexed { index, item ->
                     NavigationBarItem(
                         selected = selectedNavigationIndex == index,
                         onClick = {
                             selectedNavigationIndex = index
-                            navController.navigate(item.route)
+                            navController.navigate(item.route) {
+                                // Pop up to the start destination of the graph to
+                                // avoid building up a large stack of destinations
+                                // on the back stack as users select items
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                // Avoid multiple copies of the same destination when
+                                // reselecting the same item
+                                launchSingleTop = true
+                                // Restore state when reselecting a previously selected item
+                                restoreState = true
+                            }
                         },
                         icon = {
                             Icon(imageVector = item.icon, contentDescription = item.title)
@@ -69,14 +105,20 @@ fun TodoNavBar() {
                         label = {
                             Text(
                                 item.title,
-                                color = if(index == selectedNavigationIndex)
+                                color = if (index == selectedNavigationIndex)
                                     Color.Black
-                                else Color.Gray
+                                else
+                                    Color.Gray
                             )
                         },
-                        colors = NavigationBarItemDefaults.colors(
+                        /*
                             selectedIconColor = MaterialTheme.colorScheme.surface,
                             indicatorColor = MaterialTheme.colorScheme.primary
+                         */
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = Color.Yellow,
+                            indicatorColor = Color.Red,
+                            unselectedIconColor = Color.Green
                         )
 
                     )
@@ -84,14 +126,11 @@ fun TodoNavBar() {
             }
         }
     ) { contentPadding ->
-        NavHost(navController, startDestination = "todolist") {
-            composable("todolist") {
-                TodoList()
-            }
-            composable("profile") {
-                Text("PROFILE")
-            }
-        }
+        AppNavHost(
+            navController = navController,
+            startDestination = TodoRoute.TODOLIST.name,
+            modifier = Modifier.padding(contentPadding)
+        )
     }
 
 }
