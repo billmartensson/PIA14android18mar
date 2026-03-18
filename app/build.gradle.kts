@@ -62,4 +62,7 @@ dependencies {
 
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
+
 }

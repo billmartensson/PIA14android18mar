@@ -16,10 +16,13 @@ import se.magictechnology.pia14android18mar.ui.theme.PIA14android18marTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val todovm = TodoViewModel()
+
         enableEdgeToEdge()
         setContent {
             PIA14android18marTheme {
-                TodoNavBar()
+                TodoNavBar(todovm)
             }
         }
     }

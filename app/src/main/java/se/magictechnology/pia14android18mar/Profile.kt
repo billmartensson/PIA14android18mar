@@ -1,10 +1,8 @@
 package se.magictechnology.pia14android18mar
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -13,24 +11,16 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import se.magictechnology.pia14android18mar.ui.theme.Nicered
 
 @Composable
-fun TodoList(todovm : TodoViewModel = viewModel(), goDetail: () -> Unit = {}) {
+fun Profile(todovm : TodoViewModel = viewModel()) {
 
     val mynumber = todovm.mynumber.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Text(
-            modifier = Modifier.background(MaterialTheme.colorScheme.surface),
-            text = "TODOLIST",
-            fontSize = 50.sp,
-            color = MaterialTheme.colorScheme.primary
-        )
+        Text("THIS IS PROFILE")
 
         Text("CLICK: ${mynumber.value}")
 
@@ -39,17 +29,11 @@ fun TodoList(todovm : TodoViewModel = viewModel(), goDetail: () -> Unit = {}) {
         }) {
             Text("CLICK HERE!!!")
         }
-
-        Button(onClick = {
-            goDetail()
-        }) {
-            Text("GO DETAIL")
-        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun TodoListPreview() {
-    TodoList()
+fun ProfilePreview() {
+    Profile()
 }

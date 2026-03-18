@@ -4,15 +4,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 
 @Composable
 fun AppNavHost(
+    modifier: Modifier = Modifier,
+    todovm : TodoViewModel = viewModel(),
     navController: NavHostController,
-    startDestination: String,
-    modifier: Modifier = Modifier) {
+    startDestination: String
+    ) {
 
     NavHost(
         modifier = modifier,
@@ -21,7 +24,7 @@ fun AppNavHost(
     ) {
         // TODO
         composable(TodoRoute.TODOLIST.name) {
-            TodoList(goDetail = {
+            TodoList(todovm = todovm, goDetail = {
                 navController.navigate(TodoRoute.DETAIL.name)
             })
         }
@@ -32,7 +35,7 @@ fun AppNavHost(
 
         // PROFILE
         composable(TodoRoute.PROFILE.name) {
-            Text("PROFILE")
+            Profile(todovm = todovm)
         }
         composable(TodoRoute.PROFILESETTINGS.name) {
             Text("PROFILE SETTINGS")
