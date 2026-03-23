@@ -1,5 +1,6 @@
 package se.magictechnology.pia14android18mar
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -54,6 +55,7 @@ fun TodoList(todovm : TodoViewModel = viewModel(), goDetail: (gotodo : Todoitem)
                         //todovm.deletetodo(todos.value[it])
                         //todovm.changedone(todos.value[it])
                         goDetail(todos.value[it])
+                        //todovm.makefavorite(todos.value[it])
                     }
                 ) {
                     Text(todos.value[it].todotitle)

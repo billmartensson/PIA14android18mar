@@ -25,15 +25,31 @@ class TodoViewModel : ViewModel() {
     val todoitems: StateFlow<List<Todoitem>> = _todoitems.asStateFlow()
 
 
+    private var _favitems = MutableStateFlow(listOf<Todoitem>())
+    val favitems: StateFlow<List<Todoitem>> = _favitems.asStateFlow()
+
+
     fun loadtodo() {
 
         _todoitems.value = listOf()
 
         CoroutineScope(Dispatchers.IO).launch {
             val tododao = db.todoitemdao()
-            val todos = tododao.getAllTodo()
+            val todos = tododao.getTodolist()
 
             _todoitems.value = todos
+        }
+    }
+
+    fun loadfav() {
+
+        _favitems.value = listOf()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val tododao = db.todoitemdao()
+            val todos = tododao.getFavorites()
+
+            _favitems.value = todos
         }
     }
 
@@ -45,5 +61,35 @@ class TodoViewModel : ViewModel() {
         }
     }
 
+    fun savetodo(todo : Todoitem) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val tododao = db.todoitemdao()
+            tododao.updateTodo(todo)
+            loadtodo()
+        }
+    }
 
+    fun makefavorite(todo : Todoitem) {
+        val newtodo = todo.copy(favorite = true)
+        newtodo.uid = 0
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val tododao = db.todoitemdao()
+            tododao.addTodo(newtodo)
+            loadtodo()
+        }
+    }
+
+    fun addFavToTodo(todo : Todoitem) {
+        val newtodo = todo.copy(favorite = false)
+        newtodo.uid = 0
+        newtodo.done = false
+
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val tododao = db.todoitemdao()
+            tododao.addTodo(newtodo)
+            loadtodo()
+        }
+    }
 }

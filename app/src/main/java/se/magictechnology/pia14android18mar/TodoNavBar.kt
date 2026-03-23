@@ -1,5 +1,7 @@
 package se.magictechnology.pia14android18mar
 
+import android.util.Log
+import android.window.BackEvent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +46,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 
 
 enum class TodoRoute {
@@ -52,7 +56,9 @@ enum class TodoRoute {
     DETAIL,
     PROFILE,
     PROFILESETTINGS,
-    FAVORITES
+    FAVORITESMAIN,
+    FAVORITES,
+    FAVORITESDETAIL
 }
 
 data class NavigationItem(
@@ -75,7 +81,7 @@ val navigationItems = listOf(
     NavigationItem(
         title = "Favorites",
         icon = Icons.Default.Favorite,
-        route = TodoRoute.FAVORITES.name
+        route = TodoRoute.FAVORITESMAIN.name
     )
 
 )
@@ -89,7 +95,23 @@ fun TodoNavBar(todovm : TodoViewModel = viewModel()) {
     var selectedNavigationIndex by remember { mutableIntStateOf(0) }
     var topbartitle by remember { mutableStateOf(navigationItems.first().title) }
 
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
 
+    LaunchedEffect(navBackStackEntry) {
+        navBackStackEntry?.destination?.route?.let {
+            if(it.contains("Todoitem")) {
+                navBackStackEntry?.let {
+                    val todo : Todoitem = it.toRoute()
+                    topbartitle = todo.todotitle
+                    return@LaunchedEffect
+                }
+            }
+
+            topbartitle = it
+        }
+
+
+    }
 
     Scaffold(
         topBar = {
@@ -111,11 +133,13 @@ fun TodoNavBar(todovm : TodoViewModel = viewModel()) {
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* do something */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Menu,
-                            contentDescription = "Localized description"
-                        )
+                    if(selectedNavigationIndex == 0) {
+                        IconButton(onClick = { /* do something */ }) {
+                            Icon(
+                                imageVector = Icons.Filled.Menu,
+                                contentDescription = "Localized description"
+                            )
+                        }
                     }
                 },
                 title = {
@@ -134,7 +158,6 @@ fun TodoNavBar(todovm : TodoViewModel = viewModel()) {
         },
         bottomBar = {
             
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination
             
             NavigationBar(
@@ -142,6 +165,7 @@ fun TodoNavBar(todovm : TodoViewModel = viewModel()) {
                 windowInsets = NavigationBarDefaults.windowInsets
             ) {
                 navigationItems.forEachIndexed { index, item ->
+
                     val selected = currentDestination
                         ?.hierarchy
                         ?.any { it.route == item.route } == true
@@ -150,7 +174,7 @@ fun TodoNavBar(todovm : TodoViewModel = viewModel()) {
                         selected = selected,
                         onClick = {
                             selectedNavigationIndex = index
-                            topbartitle = item.title
+                            //topbartitle = item.title
                             navController.navigate(item.route) {
                                 // Pop up to the start destination of the graph to
                                 // avoid building up a large stack of destinations

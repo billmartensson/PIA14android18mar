@@ -10,19 +10,29 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.RoomDatabase
 import androidx.room.Update
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Entity
 data class Todoitem(
-    @PrimaryKey(autoGenerate = true) val uid: Int,
+    @PrimaryKey(autoGenerate = true) var uid: Int,
     @ColumnInfo(name = "todotitle") var todotitle: String,
-    @ColumnInfo(name = "done") var done: Boolean
+    @ColumnInfo(name = "done") var done: Boolean,
+    @ColumnInfo(name = "favorite") var favorite: Boolean = false
 )
+
 
 @Dao
 interface TodoitemDao {
 
     @Query("SELECT * FROM todoitem ORDER BY done ASC")
     fun getAllTodo() : List<Todoitem>
+
+    @Query("SELECT * FROM todoitem WHERE favorite = 0")
+    fun getTodolist() : List<Todoitem>
+
+    @Query("SELECT * FROM todoitem WHERE favorite = 1")
+    fun getFavorites() : List<Todoitem>
 
     @Query("SELECT * FROM todoitem WHERE done = 1")
     fun getDone() : List<Todoitem>

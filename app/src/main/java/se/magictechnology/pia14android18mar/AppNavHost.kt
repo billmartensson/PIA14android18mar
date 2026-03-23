@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import androidx.navigation.toRoute
 
 @Composable
 fun AppNavHost(
@@ -26,13 +27,16 @@ fun AppNavHost(
         // TODO
         navigation(route = TodoRoute.TODOMAIN.name, startDestination = TodoRoute.TODOLIST.name) {
             composable(TodoRoute.TODOLIST.name) {
-                TodoList(todovm = todovm, goDetail = {
-                    navController.navigate(TodoRoute.DETAIL.name)
+                TodoList(todovm = todovm, goDetail = { todo ->
+                    navController.navigate(todo)
                 })
             }
 
-            composable(TodoRoute.DETAIL.name) {
-                Text("DETAIL")
+            composable<Todoitem> { backStackEntry ->
+                val todo : Todoitem = backStackEntry.toRoute()
+                TodoDetail(todovm = todovm, currenttodo = todo, goBack = {
+                    navController.popBackStack()
+                })
             }
         }
 
@@ -48,8 +52,18 @@ fun AppNavHost(
 
 
         // FAVORITES
-        composable(TodoRoute.FAVORITES.name) {
-            Text("FAVORITE SCREEN")
+        navigation(route = TodoRoute.FAVORITESMAIN.name, startDestination = TodoRoute.FAVORITES.name) {
+            composable(TodoRoute.FAVORITES.name) {
+                Favorites(todovm = todovm, goDetail = { todo ->
+                    navController.navigate(todo)
+                })
+            }
+            composable<Todoitem> { backStackEntry ->
+                val todo : Todoitem = backStackEntry.toRoute()
+                TodoDetail(todovm = todovm, currenttodo = todo, goBack = {
+                    navController.popBackStack()
+                })
+            }
         }
     }
 }
