@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navigation
 
 @Composable
 fun AppNavHost(
@@ -23,27 +24,32 @@ fun AppNavHost(
         startDestination = startDestination
     ) {
         // TODO
-        composable(TodoRoute.TODOLIST.name) {
-            TodoList(todovm = todovm, goDetail = {
-                navController.navigate(TodoRoute.DETAIL.name)
-            })
-        }
-        composable(TodoRoute.DETAIL.name) {
-            Text("DETAIL")
-        }
+        navigation(route = TodoRoute.TODOMAIN.name, startDestination = TodoRoute.TODOLIST.name) {
+            composable(TodoRoute.TODOLIST.name) {
+                TodoList(todovm = todovm, goDetail = {
+                    navController.navigate(TodoRoute.DETAIL.name)
+                })
+            }
 
+            composable(TodoRoute.DETAIL.name) {
+                Text("DETAIL")
+            }
+        }
 
         // PROFILE
-        composable(TodoRoute.PROFILE.name) {
-            Profile(todovm = todovm)
-        }
-        composable(TodoRoute.PROFILESETTINGS.name) {
-            Text("PROFILE SETTINGS")
+        navigation(route = TodoRoute.PROFILEMAIN.name, startDestination = TodoRoute.PROFILE.name) {
+            composable(TodoRoute.PROFILE.name) {
+                Profile(todovm = todovm)
+            }
+            composable(TodoRoute.PROFILESETTINGS.name) {
+                Text("PROFILE SETTINGS")
+            }
         }
 
-        // TEST
-        composable(TodoRoute.TEST.name) {
-            Text("TEST TEST TEST")
+
+        // FAVORITES
+        composable(TodoRoute.FAVORITES.name) {
+            Text("FAVORITE SCREEN")
         }
     }
 }

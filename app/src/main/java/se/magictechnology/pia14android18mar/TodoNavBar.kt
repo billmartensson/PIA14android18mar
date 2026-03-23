@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
@@ -36,18 +37,22 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
 
 enum class TodoRoute {
+    TODOMAIN,
+    PROFILEMAIN,
     TODOLIST,
     DETAIL,
     PROFILE,
     PROFILESETTINGS,
-    TEST
+    FAVORITES
 }
 
 data class NavigationItem(
@@ -60,17 +65,17 @@ val navigationItems = listOf(
     NavigationItem(
         title = "Todo",
         icon = Icons.Default.Home,
-        route = TodoRoute.TODOLIST.name
+        route = TodoRoute.TODOMAIN.name
     ),
     NavigationItem(
         title = "Profile",
         icon = Icons.Default.Person,
-        route = TodoRoute.PROFILE.name
+        route = TodoRoute.PROFILEMAIN.name
     ),
     NavigationItem(
-        title = "Test",
-        icon = Icons.Default.Person,
-        route = TodoRoute.TEST.name
+        title = "Favorites",
+        icon = Icons.Default.Favorite,
+        route = TodoRoute.FAVORITES.name
     )
 
 )
@@ -128,13 +133,21 @@ fun TodoNavBar(todovm : TodoViewModel = viewModel()) {
             }
         },
         bottomBar = {
+            
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentDestination = navBackStackEntry?.destination
+            
             NavigationBar(
                 containerColor = Color.Cyan,
                 windowInsets = NavigationBarDefaults.windowInsets
             ) {
                 navigationItems.forEachIndexed { index, item ->
+                    val selected = currentDestination
+                        ?.hierarchy
+                        ?.any { it.route == item.route } == true
+                    
                     NavigationBarItem(
-                        selected = selectedNavigationIndex == index,
+                        selected = selected,
                         onClick = {
                             selectedNavigationIndex = index
                             topbartitle = item.title
@@ -182,13 +195,12 @@ fun TodoNavBar(todovm : TodoViewModel = viewModel()) {
         AppNavHost(
             todovm = todovm,
             navController = navController,
-            startDestination = TodoRoute.TODOLIST.name,
+            startDestination = TodoRoute.TODOMAIN.name,
             modifier = Modifier.padding(contentPadding)
         )
     }
 
 }
-
 
 @Preview(showBackground = true)
 @Composable
